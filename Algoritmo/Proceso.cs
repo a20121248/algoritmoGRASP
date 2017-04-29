@@ -12,14 +12,19 @@ namespace Algoritmo
         public int id;
         public int[] asignacionTrabajadores;
         public int puestosDeTrabajo;
-        public int trabajadoresAsignados;
+        public int trabajadoresAsignados=0; // cantidad
         public bool esConsiderado;
         
-        public Proceso(int id)
+        public Proceso(int id, int numTrabajadores)
         {
             this.id = id;
+            this.asignacionTrabajadores = new int[numTrabajadores];
         }
 
+        public void asignarTrabajador(Trabajador trab){
+            asignacionTrabajadores[trab.id] = 1;
+            ++trabajadoresAsignados;
+        }
 
         public void imprimir()
         {

@@ -14,9 +14,9 @@ namespace Algoritmo
 
         public int numTrabajadores;
         public int numProcesos;
+        public int tiempoTurno; // en minutos
 
         string ruta;
-
 
         public List<Proceso> procesos = new List<Proceso>();
         public List<Trabajador> trabajadores = new List<Trabajador>();
@@ -39,6 +39,7 @@ namespace Algoritmo
             this.numTrabajadores = Convert.ToInt32(data[0]);
             this.numProcesos = Convert.ToInt32(data[1]);
             this.alfa = Convert.ToDouble(data[2]);
+            this.tiempoTurno = Convert.ToInt32(data[3]);
 
             file.ReadLine(); //newline
             file.ReadLine(); //cabecera de rotura
@@ -82,7 +83,7 @@ namespace Algoritmo
             data = linea.Split(',');
             for (int i = 1; i < this.numProcesos + 1; ++i)
             {
-                Proceso proceso = new Proceso(i-1);
+                Proceso proceso = new Proceso(i-1, this.numTrabajadores);
                 proceso.puestosDeTrabajo = Convert.ToInt32(data[i]);
                 procesos.Add(proceso);
             }
