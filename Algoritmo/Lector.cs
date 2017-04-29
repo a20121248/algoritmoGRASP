@@ -28,7 +28,7 @@ namespace Algoritmo
             this.ruta = ruta;
         }
 
-        public void leerData()
+        public void LeerData()
         {
             StreamReader file = new System.IO.StreamReader(ruta);
             String linea;
@@ -74,7 +74,7 @@ namespace Algoritmo
                     trabajadores[i].tiempoProceso.Add(Convert.ToInt32(linea_tiempo[j]));
                     //tiempo[i, j-1] = Convert.ToInt32(linea_tiempo[j]);
                 }
-                trabajadores[i].imprimir();
+                trabajadores[i].Imprimir();
             }
 
             linea = file.ReadLine(); //newline

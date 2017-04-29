@@ -12,7 +12,7 @@ namespace Algoritmo
         static void Main(string[] args)
         {
             Lector lector = new Lector("ruta2.csv");
-            lector.leerData();
+            lector.LeerData();
             
 
             

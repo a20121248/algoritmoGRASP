@@ -13,12 +13,18 @@ namespace Algoritmo
         public List<double> roturaProceso = new List<double>(); // entre 0 y 1
         public List<int> tiempoProceso = new List<int>(); //en minutos 
 
+
         public Trabajador(int id)
         {
             this.id = id;
         }
 
-        public void imprimir()
+        public double calcularEficienciaProceso(Proceso proc)
+        {
+            return (1 + roturaProceso[proc.id])*tiempoProceso[proc.id];
+        }
+
+        public void Imprimir()
         {
             Console.WriteLine("TRABAJADOR: {0}", id);
 

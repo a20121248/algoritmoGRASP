@@ -20,19 +20,19 @@ namespace Algoritmo
             //Console.WriteLine(data.numProcesos);
         }
 
-        public Proceso elegirProceso()
+        public Proceso ElegirProceso()
         {
             Proceso proc = data.procesos.ElementAt(0);
             data.procesos.RemoveAt(0);
             return proc;
         }
 
-        public void encolarProceso(Proceso proc)
+        public void EncolarProceso(Proceso proc)
         {
             data.procesos.Add(proc);
         }
 
-        public int funcionObjetivo(List<Proceso> solucion)
+        public int FuncionObjetivo(List<Proceso> solucion)
         {
             int valor = 0;
             for (int i = 0; i < data.numTrabajadores; ++i)
@@ -52,8 +52,8 @@ namespace Algoritmo
 
         public List<Proceso> MejorSolucion(List<Proceso> solucion1, List<Proceso> solucion2)
         {
-            int valor1 = funcionObjetivo(solucion1);
-            int valor2 = funcionObjetivo(solucion2);
+            int valor1 = FuncionObjetivo(solucion1);
+            int valor2 = FuncionObjetivo(solucion2);
 
             if (valor1 > valor2)
             {
@@ -64,7 +64,7 @@ namespace Algoritmo
             }
         }
 
-        public List<Proceso> asignacion_GRASP()
+        public List<Proceso> AsignacionGRASP()
         {
             List<Proceso> solucion = null;
             for (int i = 0; i < 100000; i++) // condicion de parada
@@ -76,10 +76,14 @@ namespace Algoritmo
             return solucion;
         }
 
-        Trabajador elegirTrabajador(List<Trabajador> trabajadores, Proceso proceso, double alfa)
+        Trabajador ElegirTrabajador(List<Trabajador> trabajadores, Proceso proceso, double alfa)
         {
             /* TO DO !!! */
             Random rnd = new Random();
+            
+            //minimizar el ratio:
+
+
 
             //int c_min = valor_mejorElemento();
             //int c_max = valor_peorElemento();
@@ -98,20 +102,20 @@ namespace Algoritmo
 
             while (data.trabajadores.Count > 0 && data.procesos.Count > 0)
             {
-                Proceso proc = elegirProceso();
+                Proceso proc = ElegirProceso();
 
                 if (!proc.esConsiderado)
                 {
                     break;
                 }
 
-                Trabajador trab = elegirTrabajador(data.trabajadores, proc, alfa);
+                Trabajador trab = ElegirTrabajador(data.trabajadores, proc, alfa);
 
                 solucion[proc.id].asignarTrabajador(trab);
 
                 if (proc.trabajadoresAsignados < proc.puestosDeTrabajo)
                 {
-                    encolarProceso(proc);
+                    EncolarProceso(proc);
                 }                
             }           
 
@@ -124,16 +128,6 @@ namespace Algoritmo
             List<Proceso> solucion_mejorada = null;
 
             return solucion_mejorada;
-        }
-
-        private int valor_mejorElemento()
-        {
-            return 1;
-        }
-
-        private int valor_peorElemento()
-        {
-            return 1;
         }
         
     }
