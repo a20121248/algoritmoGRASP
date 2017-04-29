@@ -9,27 +9,57 @@ namespace Algoritmo
 {
     class GRASP
     {
-        //int numTrabajadores;
-        //int numProcesos;
         Lector data;
+        List<Proceso> solucionGRASP;
 
         public GRASP(Lector lector)
         {
             this.data = lector;
-            //Console.WriteLine(data.numTrabajadores);
-            //Console.WriteLine(data.numProcesos);
+            solucionGRASP = null;
         }
 
-        public Proceso ElegirProceso()
+        public Proceso ElegirProceso(List<Proceso> lstProcesos)
         {
-            Proceso proc = data.procesos.ElementAt(0);
-            data.procesos.RemoveAt(0);
+            Proceso proc = lstProcesos.ElementAt(0);
+            lstProcesos.RemoveAt(0);
             return proc;
         }
 
-        public void EncolarProceso(Proceso proc)
+        public void EncolarProceso(List<Proceso> lstProcesos, Proceso proc)
         {
-            data.procesos.Add(proc);
+            lstProcesos.Add(proc);
+        }
+
+        Trabajador ElegirTrabajador(List<Trabajador> lstTrabajadores, Proceso proceso, double alfa)
+        {
+            Random rnd = new Random();
+
+            //minimizar el ratio:
+            double c_min = lstTrabajadores[0].CalcularIndiceProceso(proceso); // 99999
+            double c_max = -1;
+            for (int i = 0; i < lstTrabajadores.Count; ++i)
+            {
+                c_min = Math.Min(c_min, lstTrabajadores[i].CalcularIndiceProceso(proceso));
+                c_max = Math.Max(c_max, lstTrabajadores[i].CalcularIndiceProceso(proceso));
+            }
+            double limInf = c_min;
+            double limSup = c_min + alfa*(c_max-c_min);
+
+            // Construimos la RCL
+            List<Trabajador> RCL = new List<Trabajador>();
+            for (int i = 0; i < lstTrabajadores.Count; ++i)
+            {
+                double indice = lstTrabajadores[i].CalcularIndiceProceso(proceso);
+                if (indice>=limInf && indice<=limSup)
+                    RCL.Add(lstTrabajadores[i]);
+            }
+
+            // Escogemos un elemento aleatorio
+            int indRandom = rnd.Next(0, lstTrabajadores.Count - 1);
+            Trabajador trab = lstTrabajadores.ElementAt(indRandom);
+            lstTrabajadores.RemoveAt(indRandom);
+
+            return trab;
         }
 
         public int FuncionObjetivo(List<Proceso> solucion)
@@ -37,14 +67,15 @@ namespace Algoritmo
             int valor = 0;
             for (int i = 0; i < data.numTrabajadores; ++i)
             {
-                for (int j = 0; i < data.numProcesos; ++j)
+                for (int j = 0; j < data.numProcesos; ++j)
                 {
                     double rotura = 1 + data.trabajadores[i].roturaProceso[j];
                     double tiempo = data.trabajadores[i].tiempoProceso[j];
-                    int asignado = data.procesos[j].asignacionTrabajadores[i];
+                    int asignado = solucion[j].asignacionTrabajadores[i];
 
                     //ESTO HACE TRUNCATE
-                    valor += Convert.ToInt32((data.tiempoTurno) / (rotura * tiempo * asignado));
+                    if (asignado != 0)
+                        valor += Convert.ToInt32((data.tiempoTurno) / (rotura * tiempo * asignado));
                 }
             }
             return valor;
@@ -52,83 +83,120 @@ namespace Algoritmo
 
         public List<Proceso> MejorSolucion(List<Proceso> solucion1, List<Proceso> solucion2)
         {
-            int valor1 = FuncionObjetivo(solucion1);
-            int valor2 = FuncionObjetivo(solucion2);
-
-            if (valor1 > valor2)
-            {
-                return solucion1;
-            } else
-            {
-                return solucion2;
-            }
+            return FuncionObjetivo(solucion1) > FuncionObjetivo(solucion2) ? solucion1 : solucion2;
         }
 
         public List<Proceso> AsignacionGRASP()
         {
-            List<Proceso> solucion = null;
-            for (int i = 0; i < 100000; i++) // condicion de parada
+            for (int i = 0; i < 10000; ++i) // condicion de parada
             {
                 List<Proceso> solucionConstruccion = FaseConstruccion(data.alfa);
                 List<Proceso> solucionMejorada = FaseMejora(solucionConstruccion); // compara la construccino
-                solucion = MejorSolucion(solucion, solucionMejorada);
+
+                if (solucionGRASP == null)
+                    solucionGRASP = solucionMejorada;
+                else
+                    solucionGRASP = MejorSolucion(solucionGRASP, solucionMejorada);             
             }
-            return solucion;
+            return solucionGRASP;
         }
-
-        Trabajador ElegirTrabajador(List<Trabajador> trabajadores, Proceso proceso, double alfa)
-        {
-            /* TO DO !!! */
-            Random rnd = new Random();
-            
-            //minimizar el ratio:
-
-
-
-            //int c_min = valor_mejorElemento();
-            //int c_max = valor_peorElemento();
-
-            //List<AsignacionPP> RCL = construir_RCL(alfa);
-
-            int indice = rnd.Next(0, trabajadores.Count-1);
-            return trabajadores[indice];
-        }
-
 
         public List<Proceso> FaseConstruccion(double alfa)
         {
-            //List<Proceso> solucion = new List<Proceso>(); // Solucion (lista) inicialmente vacia
-            List<Proceso> solucion = new List<Proceso>(data.procesos);
+            // Solucion con todos los procesos sin asignaciones (Vacia)
+            //List<Proceso> solucion = new List<Proceso>(data.procesos);
 
-            while (data.trabajadores.Count > 0 && data.procesos.Count > 0)
+            //List<Proceso> lstProcesos = new List<Proceso>(data.procesos);
+            //List<Trabajador> lstTrabajadores = new List<Trabajador>(data.trabajadores); 
+
+            // Solucion con todos los procesos sin asignaciones (Vacia)
+            List<Proceso> solucion = data.procesos.ConvertAll(proc => new Proceso(proc));
+            // Lista de procesos por asignar
+            List<Proceso> lstProcesos = data.procesos.ConvertAll(proc => new Proceso(proc));
+            // Lista de trabajadores por asignar
+            List<Trabajador> lstTrabajadores = data.trabajadores.ConvertAll(trab => new Trabajador(trab));
+
+            // Mientras hayan procesos que puedan asignarse y trabajadores por asignar
+            while (lstProcesos.Count > 0 && lstTrabajadores.Count > 0)
             {
-                Proceso proc = ElegirProceso();
+                Proceso proc = ElegirProceso(lstProcesos); // obtengo el primer proceso
 
+                // si no se hace, no lo cuento (ya lo removi de la lista)
                 if (!proc.esConsiderado)
-                {
-                    break;
-                }
+                    continue;
 
-                Trabajador trab = ElegirTrabajador(data.trabajadores, proc, alfa);
+                // escogo a un trabajador (dentro esta el RCL)
+                Trabajador trab = ElegirTrabajador(lstTrabajadores, proc, alfa);
 
+                // asigno dicho trabajador al proceso
+                proc.asignarTrabajador(trab);
+                
+                // lo agrego a la solucion
                 solucion[proc.id].asignarTrabajador(trab);
 
+                // si el proceso aun se le pueden asignar trabajadores lo agrego al final
                 if (proc.trabajadoresAsignados < proc.puestosDeTrabajo)
-                {
-                    EncolarProceso(proc);
-                }                
-            }           
-
-            
+                    EncolarProceso(lstProcesos, proc);
+            }            
             return solucion;
         }
 
-        public List<Proceso> FaseMejora(List<Proceso> solucion_construccion)
+        public List<Proceso> FaseMejora(List<Proceso> solucionConstruccion)
         {
             List<Proceso> solucion_mejorada = null;
 
-            return solucion_mejorada;
+            return solucionConstruccion;
         }
-        
+
+        public void ImprimirAsignacion()
+        {
+            for (int i = 0; i < solucionGRASP.Count; ++i)
+            {
+                Console.WriteLine("Proceso #{0}:", i+1);
+
+                if (!solucionGRASP[i].esConsiderado)
+                {
+                    Console.WriteLine("Este proceso no se ha considerado para la asignacion.");
+                    continue;
+                }
+
+                //for (int j = 0; j < solucion[i].trabajadoresAsignados; ++j)
+                for (int j = 0; j < solucionGRASP[i].asignacionTrabajadores.Length; ++j)
+                {                    
+                    if (solucionGRASP[i].asignacionTrabajadores[j] == 1)
+                        Console.Write(" T{0:D3}", j + 1);
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public void ImprimirFuncionObjetivo()
+        {
+            Console.WriteLine("F.O.: {0}", FuncionObjetivo(solucionGRASP));
+        }
+
+        public void ImprimirAsignacion(List<Proceso> sol)
+        {
+            for (int i = 0; i < sol.Count; ++i)
+            {
+                Console.WriteLine("Proceso #{0}:", i + 1);
+
+                if (!sol[i].esConsiderado)
+                {
+                    Console.WriteLine("Este proceso no se ha considerado para la asignacion.");
+                    continue;
+                }
+
+                //for (int j = 0; j < solucion[i].trabajadoresAsignados; ++j)
+                for (int j = 0; j < sol[i].asignacionTrabajadores.Length; ++j)
+                {
+                    if (sol[i].asignacionTrabajadores[j] == 1)
+                        Console.Write(" T{0:D3}", j + 1);
+
+                }
+                    Console.WriteLine();
+            }
+        }
+
     }
 }

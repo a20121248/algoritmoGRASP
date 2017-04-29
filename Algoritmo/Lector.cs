@@ -16,13 +16,11 @@ namespace Algoritmo
         public int numProcesos;
         public int tiempoTurno; // en minutos
 
-        string ruta;
+        private string ruta;
 
         public List<Proceso> procesos = new List<Proceso>();
         public List<Trabajador> trabajadores = new List<Trabajador>();
         
-
-
         public Lector(string ruta)
         {
             this.ruta = ruta;
@@ -54,14 +52,12 @@ namespace Algoritmo
                 for (int j = 1; j < this.numProcesos+1; ++j)
                 {                    
                     trabajador.roturaProceso.Add(Convert.ToDouble(linea_rotura[j]));
-                    //rotura[i, j-1] = Convert.ToDouble(linea_rotura[j]);
                 }
                 trabajadores.Add(trabajador);
             }
             
             linea = file.ReadLine(); //newline
             linea = file.ReadLine(); //cabecera de tiempo
-
             
 
             // Leo indices de tiempo, matriz de trabajador x proceso
@@ -72,9 +68,7 @@ namespace Algoritmo
                 for (int j = 1; j < this.numProcesos+1; ++j)
                 {
                     trabajadores[i].tiempoProceso.Add(Convert.ToInt32(linea_tiempo[j]));
-                    //tiempo[i, j-1] = Convert.ToInt32(linea_tiempo[j]);
                 }
-                trabajadores[i].Imprimir();
             }
 
             linea = file.ReadLine(); //newline
@@ -96,10 +90,50 @@ namespace Algoritmo
             for (int i = 1; i < this.numProcesos + 1; ++i)
             {
                 procesos[i-1].esConsiderado = (Convert.ToInt32(data[i]) == 1) ? true : false;
-                procesos[i-1].imprimir();
             }
             
             file.Close();
         }
+
+        public void Imprimir()
+        {
+            ImprimirDatosGenerales();
+            Console.WriteLine("=======================================================");
+
+            ImprimirTrabajadores();
+            Console.WriteLine("=======================================================");
+
+            ImprimirProcesos();
+            Console.WriteLine("=======================================================");
+        }
+
+        public void ImprimirDatosGenerales()
+        {
+            Console.WriteLine("Cantidad de trabajadores: {0}", numTrabajadores);
+            Console.WriteLine("Cantidad de procesos: {0}", numProcesos);
+            Console.WriteLine("Alfa: {0}", alfa);
+            Console.WriteLine("Tiempo total del turno: {0}", tiempoTurno);
+        }
+
+        public void ImprimirTrabajadores()
+        {
+            for (int i = 0; i < numTrabajadores; ++i)
+            {
+                if (i != 0)
+                    Console.WriteLine("-------------------------------------------------------");
+                trabajadores[i].Imprimir();
+            }                
+        }
+
+        public void ImprimirProcesos()
+        {
+            for (int i = 0; i < numProcesos; ++i)
+            {
+                if (i != 0)
+                    Console.WriteLine("-------------------------------------------------------");
+                procesos[i].Imprimir();
+            }                
+        }
+
     }
 }

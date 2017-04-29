@@ -11,18 +11,17 @@ namespace Algoritmo
 
         static void Main(string[] args)
         {
-            Lector lector = new Lector("ruta2.csv");
+            Lector lector = new Lector("data.csv");
             lector.LeerData();
-            
+            //lector.Imprimir();
 
-            
+            GRASP grasp = new GRASP(lector);
+            grasp.AsignacionGRASP();
+            grasp.ImprimirFuncionObjetivo(); // texto de salida
+            grasp.ImprimirAsignacion(); // texto de salida
 
-            //GRASP grasp;
-            //grasp = new GRASP(lector);
 
-            //objGrasp.asignacion_GRASP();
-
-            //objGrasp.imprimir_Asignacion(); // texto de salida
+            Console.ReadLine();
         }
 
     }

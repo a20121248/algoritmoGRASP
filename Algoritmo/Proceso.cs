@@ -11,14 +11,30 @@ namespace Algoritmo
     {
         public int id;
         public int[] asignacionTrabajadores;
+        public int trabajadoresAsignados; // cantidad
         public int puestosDeTrabajo;
-        public int trabajadoresAsignados=0; // cantidad
         public bool esConsiderado;
-        
+
+        public Proceso(Proceso otroProceso)
+        {
+            this.id = otroProceso.id;
+            this.asignacionTrabajadores = new int[otroProceso.asignacionTrabajadores.Length];
+            Array.Copy(otroProceso.asignacionTrabajadores, this.asignacionTrabajadores, otroProceso.asignacionTrabajadores.Length);
+            //this.asignacionTrabajadores = new int[otroProceso.asignacionTrabajadores.Length];
+            //for (int i = 0; i < this.asignacionTrabajadores.Length; ++i)
+            //this.asignacionTrabajadores[i] = otroProceso.asignacionTrabajadores[i];
+            this.trabajadoresAsignados = otroProceso.trabajadoresAsignados;
+            this.puestosDeTrabajo = otroProceso.puestosDeTrabajo;
+            this.esConsiderado = otroProceso.esConsiderado;
+        }
+
         public Proceso(int id, int numTrabajadores)
         {
             this.id = id;
-            this.asignacionTrabajadores = new int[numTrabajadores];
+            this.asignacionTrabajadores = new int[numTrabajadores]; // inicializa en 0 por default
+            this.trabajadoresAsignados = 0;
+            this.puestosDeTrabajo = -1;
+            this.esConsiderado = true;
         }
 
         public void asignarTrabajador(Trabajador trab){
@@ -26,15 +42,12 @@ namespace Algoritmo
             ++trabajadoresAsignados;
         }
 
-        public void imprimir()
+        public void Imprimir()
         {
             Console.WriteLine("PROCESO: {0}", id);
-
             Console.WriteLine("Hace o no hace: {0}", esConsiderado);
             Console.WriteLine("Puestos de trabajo: {0}", puestosDeTrabajo);
-            Console.WriteLine("=================================================");
-        }
-        
+        }        
         
     }
 }
