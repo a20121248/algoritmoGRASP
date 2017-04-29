@@ -3,42 +3,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Algoritmo
 {
     class GRASP
     {
-        int numTrabajadores;
-        int numProcesos;        
+        //int numTrabajadores;
+        //int numProcesos;
+        Lector data;
 
-
-        public GRASP(Reader lector)
+        public GRASP(Lector lector)
         {
-            numTrabajadores = lector.numTrabajadores;
-            numProcesos = lector.numProcesos;
-            
-                        
-        }        
+            this.data = lector;            
+            //Console.WriteLine(data.numTrabajadores);
+            //Console.WriteLine(data.numProcesos);
+        }
 
-
-        public List<AsignacionPP> asignacion_GRASP()
+        public Proceso elegirProceso()
         {
-            List<AsignacionPP> solucion_construccion = null;
-            List<AsignacionPP> solucion_mejorada = null;
+            Proceso proc = data.procesos.ElementAt(0);
+            data.procesos.RemoveAt(0);
+            return proc;
+        }
+
+        public void encolarProceso(Proceso proc)
+        {
+            data.procesos.Add(proc);
+        }
+
+        public List<Proceso> asignacion_GRASP()
+        {
+            List<Proceso> solucion_construccion = null;
+            List<Proceso> solucion_mejorada = null;            
             
+
             for (int i = 0; i < 100000; i++) // condicion de parada
             {
-                solucion_construccion = faseConstruccion();
+                solucion_construccion = faseConstruccion(0.6);
                 solucion_mejorada = faseMejora(solucion_construccion);
             }
 
             return solucion_mejorada;
         }
 
-        public List<AsignacionPP> faseConstruccion(double alfa)
+        public List<Proceso> faseConstruccion(double alfa)
         {
-            List<AsignacionPP> solucion = new List<AsignacionPP>(); // Solucion (lista) inicialmente vacia
-            for (int i = 0; i < numProcesos; i++)
+            
+            List<Proceso> solucion = new List<Proceso>(); // Solucion (lista) inicialmente vacia
+            /*
+            for (int i = 0; ; i++)
             {
                 int c_min = valor_mejorElemento();
                 int c_max = valor_peorElemento();
@@ -47,13 +61,13 @@ namespace Algoritmo
                 //int index = Random(RCL)
 
             }
-
+            */
             return solucion;
         }
 
-        public List<AsignacionPP> faseMejora(List<AsignacionPP> solucion_construccion)
+        public List<Proceso> faseMejora(List<Proceso> solucion_construccion)
         {
-            List<AsignacionPP> solucion_mejorada = null;
+            List<Proceso> solucion_mejorada = null;
 
             return solucion_mejorada;
         }
@@ -68,9 +82,9 @@ namespace Algoritmo
             return 1;
         }
 
-        private List<AsignacionPP> construir_RCL(double alfa)
+        private List<Proceso> construir_RCL(double alfa)
         {
-            List<AsignacionPP> RCL = null;
+            List<Proceso> RCL = null;
 
 
 

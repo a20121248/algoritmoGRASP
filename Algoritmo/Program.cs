@@ -11,16 +11,18 @@ namespace Algoritmo
 
         static void Main(string[] args)
         {
-            Reader lector = new Reader("ruta.csv");
+            Lector lector = new Lector("ruta2.csv");
             lector.leerData();
+            
 
             
-            GRASP objGrasp;
-            objGrasp = new GRASP(lector);
 
-            objGrasp.asignacion_GRASP();
+            //GRASP grasp;
+            //grasp = new GRASP(lector);
 
-            objGrasp.imprimir_Asignacion(); // texto de salida
+            //objGrasp.asignacion_GRASP();
+
+            //objGrasp.imprimir_Asignacion(); // texto de salida
         }
 
     }

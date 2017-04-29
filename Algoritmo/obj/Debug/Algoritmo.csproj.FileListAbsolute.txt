@@ -1,3 +1,8 @@
 c:\users\alulab14.inf\documents\visual studio 2015\Projects\Algoritmo\Algoritmo\bin\Debug\Algoritmo.exe.config
 C:\Users\alulab14\Downloads\Algoritmo\Algoritmo\bin\Debug\Algoritmo.exe.config
 D:\Documents\Visual Studio 2015\Projects\Algoritmo\Algoritmo\bin\Debug\Algoritmo.exe.config
+D:\Documents\Visual Studio 2015\Projects\Algoritmo\Algoritmo\obj\Debug\Algoritmo.csprojResolveAssemblyReference.cache
+D:\Documents\Visual Studio 2015\Projects\Algoritmo\Algoritmo\bin\Debug\Algoritmo.exe
+D:\Documents\Visual Studio 2015\Projects\Algoritmo\Algoritmo\bin\Debug\Algoritmo.pdb
+D:\Documents\Visual Studio 2015\Projects\Algoritmo\Algoritmo\obj\Debug\Algoritmo.exe
+D:\Documents\Visual Studio 2015\Projects\Algoritmo\Algoritmo\obj\Debug\Algoritmo.pdb
