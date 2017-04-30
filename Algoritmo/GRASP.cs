@@ -11,6 +11,7 @@ namespace Algoritmo
     {
         Lector data;
         List<Proceso> solucionGRASP;
+        Random rnd = new Random();
 
         public GRASP(Lector lector)
         {
@@ -32,7 +33,9 @@ namespace Algoritmo
 
         Trabajador ElegirTrabajador(List<Trabajador> lstTrabajadores, Proceso proceso, double alfa)
         {
-            Random rnd = new Random();
+
+            //Random rnd = new Random(Guid.NewGuid().GetHashCode());
+
 
             //minimizar el ratio:
             double c_min = lstTrabajadores[0].CalcularIndiceProceso(proceso); // 99999
@@ -43,21 +46,33 @@ namespace Algoritmo
                 c_max = Math.Max(c_max, lstTrabajadores[i].CalcularIndiceProceso(proceso));
             }
             double limInf = c_min;
-            double limSup = c_min + alfa*(c_max-c_min);
+            double limSup = c_min + alfa * (c_max - c_min);
 
             // Construimos la RCL
             List<Trabajador> RCL = new List<Trabajador>();
             for (int i = 0; i < lstTrabajadores.Count; ++i)
             {
                 double indice = lstTrabajadores[i].CalcularIndiceProceso(proceso);
-                if (indice>=limInf && indice<=limSup)
+                if (indice >= limInf && indice <= limSup)
                     RCL.Add(lstTrabajadores[i]);
             }
 
             // Escogemos un elemento aleatorio
-            int indRandom = rnd.Next(0, lstTrabajadores.Count - 1);
-            Trabajador trab = lstTrabajadores.ElementAt(indRandom);
-            lstTrabajadores.RemoveAt(indRandom);
+            int indRandom = rnd.Next(0, RCL.Count - 1);
+            Trabajador trab = RCL.ElementAt(indRandom);
+
+            RCL.RemoveAt(indRandom); // lo saco del RCL
+                                     // no se borra el objeto trabajador pq todo es por referencia creo
+
+
+            int indLstTrabajadores;
+            for (indLstTrabajadores = 0; indLstTrabajadores < lstTrabajadores.Count; ++indLstTrabajadores)
+            {
+                if (lstTrabajadores[indLstTrabajadores].id == trab.id)
+                    break;
+            }
+            lstTrabajadores.RemoveAt(indLstTrabajadores); // lo saco de la lstDeTrabajadores
+
 
             return trab;
         }
@@ -88,6 +103,7 @@ namespace Algoritmo
 
         public List<Proceso> AsignacionGRASP()
         {
+
             for (int i = 0; i < 10000; ++i) // condicion de parada
             {
                 List<Proceso> solucionConstruccion = FaseConstruccion(data.alfa);
@@ -96,7 +112,18 @@ namespace Algoritmo
                 if (solucionGRASP == null)
                     solucionGRASP = solucionMejorada;
                 else
-                    solucionGRASP = MejorSolucion(solucionGRASP, solucionMejorada);             
+                    solucionGRASP = MejorSolucion(solucionGRASP, solucionMejorada);
+
+                //DEBUG
+                Console.WriteLine("Iteracion {0}", i + 1);
+                Console.WriteLine("FO: {0}", FuncionObjetivo(solucionConstruccion));
+                ImprimirAsignacion(solucionConstruccion);
+                //Console.WriteLine("-----------------------------------------------------------------------");
+                //Console.WriteLine("Iteracion {0}", i + 1);
+                //Console.WriteLine("FO: {0}", FuncionObjetivo(solucionGRASP));
+                //ImprimirAsignacion(solucionGRASP);
+                Console.WriteLine("=======================================================================");
+
             }
             return solucionGRASP;
         }
@@ -130,14 +157,14 @@ namespace Algoritmo
 
                 // asigno dicho trabajador al proceso
                 proc.asignarTrabajador(trab);
-                
+
                 // lo agrego a la solucion
                 solucion[proc.id].asignarTrabajador(trab);
 
                 // si el proceso aun se le pueden asignar trabajadores lo agrego al final
                 if (proc.trabajadoresAsignados < proc.puestosDeTrabajo)
                     EncolarProceso(lstProcesos, proc);
-            }            
+            }
             return solucion;
         }
 
@@ -152,7 +179,7 @@ namespace Algoritmo
         {
             for (int i = 0; i < solucionGRASP.Count; ++i)
             {
-                Console.WriteLine("Proceso #{0}:", i+1);
+                Console.WriteLine("Proceso #{0}:", i + 1);
 
                 if (!solucionGRASP[i].esConsiderado)
                 {
@@ -162,7 +189,7 @@ namespace Algoritmo
 
                 //for (int j = 0; j < solucion[i].trabajadoresAsignados; ++j)
                 for (int j = 0; j < solucionGRASP[i].asignacionTrabajadores.Length; ++j)
-                {                    
+                {
                     if (solucionGRASP[i].asignacionTrabajadores[j] == 1)
                         Console.Write(" T{0:D3}", j + 1);
                 }
@@ -194,7 +221,7 @@ namespace Algoritmo
                         Console.Write(" T{0:D3}", j + 1);
 
                 }
-                    Console.WriteLine();
+                Console.WriteLine();
             }
         }
 

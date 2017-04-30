@@ -1,0 +1,1 @@
+Algoritmo.exe > salida.txt

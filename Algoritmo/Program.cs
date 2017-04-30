@@ -21,7 +21,7 @@ namespace Algoritmo
             grasp.ImprimirAsignacion(); // texto de salida
 
 
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
     }
