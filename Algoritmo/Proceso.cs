@@ -10,7 +10,7 @@ namespace Algoritmo
     class Proceso
     {
         public int id;
-        public int[] asignacionTrabajadores;
+        public List<int> asignacionTrabajadores;
         public int trabajadoresAsignados; // cantidad
         public int puestosDeTrabajo;
         public bool esConsiderado;
@@ -18,8 +18,10 @@ namespace Algoritmo
         public Proceso(Proceso otroProceso)
         {
             this.id = otroProceso.id;
-            this.asignacionTrabajadores = new int[otroProceso.asignacionTrabajadores.Length];
-            Array.Copy(otroProceso.asignacionTrabajadores, this.asignacionTrabajadores, otroProceso.asignacionTrabajadores.Length);
+
+            this.asignacionTrabajadores = new List<int>(otroProceso.asignacionTrabajadores);
+            //this.asignacionTrabajadores = new List<int>(new int[otroProceso.asignacionTrabajadores.Count]);
+            //Array.Copy(otroProceso.asignacionTrabajadores, this.asignacionTrabajadores, otroProceso.asignacionTrabajadores.Length);
             //this.asignacionTrabajadores = new int[otroProceso.asignacionTrabajadores.Length];
             //for (int i = 0; i < this.asignacionTrabajadores.Length; ++i)
             //this.asignacionTrabajadores[i] = otroProceso.asignacionTrabajadores[i];
@@ -31,15 +33,15 @@ namespace Algoritmo
         public Proceso(int id, int numTrabajadores)
         {
             this.id = id;
-            this.asignacionTrabajadores = new int[numTrabajadores]; // inicializa en 0 por default
+            this.asignacionTrabajadores = new List<int>(new int[numTrabajadores]); // inicializa en 0 por default
             this.trabajadoresAsignados = 0;
             this.puestosDeTrabajo = -1;
             this.esConsiderado = true;
         }
-
+        
         public void asignarTrabajador(Trabajador trab){
-            asignacionTrabajadores[trab.id] = 1;
-            ++trabajadoresAsignados;
+            this.asignacionTrabajadores[trab.id] = 1;
+            ++this.trabajadoresAsignados;
         }
 
         public void Imprimir()

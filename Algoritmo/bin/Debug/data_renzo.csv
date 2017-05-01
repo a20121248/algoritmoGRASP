@@ -1,0 +1,30 @@
+﻿Trabajadores,Procesos,Alfa,Tiempo Total del Turno
+10,7,0.3,500
+
+Rotura,Puesto 1,Puesto 2,Puesto 3,Puesto 4,Puesto 5,Puesto 6,Puesto 7,
+Trabajador 1,0.50,0.58,0.84,0.96,0.52,0.90,0.35,
+Trabajador 2,0.92,0.86,0.45,0.77,0.42,0.62,0.64,
+Trabajador 3,0.73,0.60,0.43,0.11,0.94,0.63,0.05,
+Trabajador 4,0.54,0.42,0.49,0.38,0.55,0.55,0.79,
+Trabajador 5,0.90,0.04,0.07,0.41,0.22,0.23,0.90,
+Trabajador 6,0.97,0.96,0.03,0.93,0.89,0.19,0.58,
+Trabajador 7,0.21,0.03,0.77,0.30,0.50,0.53,0.72,
+Trabajador 8,0.08,0.37,0.83,0.25,0.13,0.40,0.96,
+Trabajador 9,0.16,0.35,0.58,0.97,0.35,0.55,0.02,
+Trabajador 10,0.82,0.38,0.37,0.20,0.38,0.74,0.76,
+
+Tiempo,Puesto 1,Puesto 2,Puesto 3,Puesto 4,Puesto 5,Puesto 6,Puesto 7,
+Trabajador 1,46,52,44,35,62,99,86,
+Trabajador 2,49,41,69,94,79,75,37,
+Trabajador 3,55,48,89,77,40,61,46,
+Trabajador 4,98,76,76,46,85,91,98,
+Trabajador 5,98,71,84,60,96,51,94,
+Trabajador 6,42,66,98,39,31,56,94,
+Trabajador 7,68,80,32,81,63,98,98,
+Trabajador 8,44,45,87,92,63,93,47,
+Trabajador 9,76,67,88,77,37,88,51,
+Trabajador 10,69,84,64,82,54,42,42,
+
+Vacantes,2,3,4,4,1,4,2,
+
+Vacantes,1,1,1,1,1,1,1,

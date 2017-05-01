@@ -9,14 +9,17 @@ namespace Algoritmo
 {
     class GRASP
     {
-        Lector data;
-        List<Proceso> solucionGRASP;
-        Random rnd = new Random();
+        public Lector data;
+        public List<Trabajador> solucionFinal;
+        public Random rnd;
+        public Impresor impresor;
 
         public GRASP(Lector lector)
         {
             this.data = lector;
-            solucionGRASP = null;
+            this.solucionFinal = null;
+            this.rnd = new Random();
+            this.impresor = new Impresor(this);
         }
 
         public Proceso ElegirProceso(List<Proceso> lstProcesos)
@@ -77,7 +80,7 @@ namespace Algoritmo
             return trab;
         }
 
-        public int FuncionObjetivo(List<Proceso> solucion)
+        public int FuncionObjetivo(List<Trabajador> solucion)
         {
             int valor = 0;
             for (int i = 0; i < data.numTrabajadores; ++i)
@@ -86,7 +89,7 @@ namespace Algoritmo
                 {
                     double rotura = 1 + data.trabajadores[i].roturaProceso[j];
                     double tiempo = data.trabajadores[i].tiempoProceso[j];
-                    int asignado = solucion[j].asignacionTrabajadores[i];
+                    int asignado = solucion[i].asignacionProcesos[j];
 
                     //ESTO HACE TRUNCATE
                     if (asignado != 0)
@@ -96,23 +99,31 @@ namespace Algoritmo
             return valor;
         }
 
-        public List<Proceso> MejorSolucion(List<Proceso> solucion1, List<Proceso> solucion2)
+        public List<Trabajador> MejorSolucion(List<Trabajador> solucion1, List<Trabajador> solucion2)
         {
             return FuncionObjetivo(solucion1) > FuncionObjetivo(solucion2) ? solucion1 : solucion2;
         }
 
-        public List<Proceso> AsignacionGRASP()
+        public List<Trabajador> AsignacionGRASP()
         {
 
-            for (int i = 0; i < 10000; ++i) // condicion de parada
+            for (int i = 0; i < 1000; ++i) // condicion de parada
             {
-                List<Proceso> solucionConstruccion = FaseConstruccion(data.alfa);
-                List<Proceso> solucionMejorada = FaseMejora(solucionConstruccion); // compara la construccino
+                List<Trabajador> solucionConstruccion = FaseConstruccion(data.alfa);
+                List<Trabajador> solucionMejorada = FaseMejora(solucionConstruccion); // compara la construccino
 
-                if (solucionGRASP == null)
-                    solucionGRASP = solucionMejorada;
+                
+                //impresor.FuncionObjetivo(solucionConstruccion);
+                //impresor.FuncionObjetivo(solucionMejorada);
+                //Console.WriteLine();
+                
+
+                if (solucionFinal == null)
+                    solucionFinal = solucionMejorada;
                 else
-                    solucionGRASP = MejorSolucion(solucionGRASP, solucionMejorada);
+                    solucionFinal = MejorSolucion(solucionFinal, solucionMejorada);
+
+                //Console.WriteLine("=======================================================================");
 
                 //DEBUG
                 //Console.WriteLine("Iteracion {0}", i + 1);
@@ -130,132 +141,95 @@ namespace Algoritmo
                 //Console.WriteLine("=======================================================================");
 
             }
-            return solucionGRASP;
+            impresor.FuncionObjetivo(solucionFinal);
+            return solucionFinal;
         }
 
-        public List<Proceso> FaseConstruccion(double alfa)
+        public void AsignarTrabajadorAProceso(Trabajador trab, Proceso proc)
+        {
+            proc.asignarTrabajador(trab);
+            trab.asignarProceso(proc);
+        }
+
+        public List<Trabajador> FaseConstruccion(double alfa)
         {
             // Solucion con todos los procesos sin asignaciones (Vacia)
-            List<Proceso> solucion = data.procesos.ConvertAll(proc => new Proceso(proc));
+            List<Proceso> solucionProcesos = data.procesos.ConvertAll(proc => new Proceso(proc));
+            List<Trabajador> solucionTrabajadores = data.trabajadores.ConvertAll(trab => new Trabajador(trab));
+
             // Lista de procesos por asignar
-            List<Proceso> lstProcesos = data.procesos.ConvertAll(proc => new Proceso(proc));
+            List<Proceso> bufferProcesos = data.procesos.ConvertAll(proc => new Proceso(proc));
             // Lista de trabajadores por asignar
-            List<Trabajador> lstTrabajadores = data.trabajadores.ConvertAll(trab => new Trabajador(trab));
+            List<Trabajador> bufferTrabajadores = data.trabajadores.ConvertAll(trab => new Trabajador(trab));
 
             // Mientras hayan procesos que puedan asignarse y trabajadores por asignar
-            while (lstProcesos.Count > 0 && lstTrabajadores.Count > 0)
+            while (bufferProcesos.Count > 0 && bufferTrabajadores.Count > 0)
             {
-                Proceso proc = ElegirProceso(lstProcesos); // obtengo el primer proceso
+                Proceso proc = ElegirProceso(bufferProcesos); // obtengo el primer proceso
 
                 // si no se hace, no lo cuento (ya lo removi de la lista)
                 if (!proc.esConsiderado)
                     continue;
 
                 // escogo a un trabajador (dentro esta el RCL)
-                Trabajador trab = ElegirTrabajador(lstTrabajadores, proc, alfa);
+                Trabajador trab = ElegirTrabajador(bufferTrabajadores, proc, alfa);
 
                 // asigno dicho trabajador al proceso
                 //proc.asignarTrabajador(trab); juanjo
 
                 // lo agrego a la solucion
-                solucion[proc.id].asignarTrabajador(trab);
+                AsignarTrabajadorAProceso(solucionTrabajadores[trab.id], solucionProcesos[proc.id]);
+                //solucion[proc.id].asignarTrabajador(trab);
 
                 // si el proceso aun se le pueden asignar trabajadores lo agrego al final
-                //if (proc.trabajadoresAsignados < proc.puestosDeTrabajo)
-                if (solucion[proc.id].trabajadoresAsignados < proc.puestosDeTrabajo)
-                    EncolarProceso(lstProcesos, proc);
+                if (solucionProcesos[proc.id].trabajadoresAsignados < proc.puestosDeTrabajo)
+                    EncolarProceso(bufferProcesos, proc);
             }
-            return solucion;
+            //impresor.AsignacionDeTrabajadoresEnCadaProceso(solucionProcesos);
+            //impresor.AsignacionDeTrabajadoresEnCadaProcesoModoMatriz(solucionProcesos);
+            //Console.WriteLine("-----------------------------------------------------------------------");
+            //impresor.AsignacionDeProcesosEnCadaTrabajador(solucionTrabajadores);
+            //impresor.AsignacionDeProcesosEnCadaTrabajadorModoMatriz(solucionTrabajadores);
+            return solucionTrabajadores;
         }
 
-        public List<Proceso> FaseMejora(List<Proceso> solucionConstruccion)
+        public List<Trabajador> CrearSolucionPorIntercambio(int indTrabajador1, int indTrabajador2, List<Trabajador> solucion)
         {
-            List<Proceso> solucion_mejorada = null;
-
-            return solucionConstruccion;
+            List<Trabajador> solucionCopia = solucion.ConvertAll(trab => new Trabajador(trab));
+            solucionCopia[indTrabajador1].asignacionProcesos = solucion[indTrabajador2].asignacionProcesos;
+            solucionCopia[indTrabajador2].asignacionProcesos = solucion[indTrabajador1].asignacionProcesos;
+            return solucionCopia;
         }
 
-        public void ImprimirAsignacion()
+        public List<Trabajador> FaseMejora(List<Trabajador> solucionConstruccion)
         {
-            for (int i = 0; i < solucionGRASP.Count; ++i)
+            List<Trabajador> solucionMejora = solucionConstruccion;
+            List<Trabajador> nuevaSolucion = null;
+            for (int i = 0; i < data.numTrabajadores-1; ++i)
             {
-                Console.WriteLine("Proceso #{0}:", i + 1);
-
-                if (!solucionGRASP[i].esConsiderado)
+                for (int j = i+1; j < data.numTrabajadores; ++j)
                 {
-                    Console.WriteLine("Este proceso no se ha considerado para la asignacion.");
-                    continue;
-                }
+                    nuevaSolucion = CrearSolucionPorIntercambio(i, j, solucionConstruccion);
 
-                //for (int j = 0; j < solucion[i].trabajadoresAsignados; ++j)
-                for (int j = 0; j < solucionGRASP[i].asignacionTrabajadores.Length; ++j)
-                {
-                    if (solucionGRASP[i].asignacionTrabajadores[j] == 1)
-                        Console.Write(" T{0:D3}", j + 1);
+                    //Console.WriteLine();
+                    //Console.WriteLine();
+                    //Console.WriteLine();
+                    //impresor.AsignacionDeProcesosEnCadaTrabajadorModoMatriz(solucionConstruccion);
+                    //Console.WriteLine();
+                    //impresor.AsignacionDeProcesosEnCadaTrabajadorModoMatriz(nuevaSolucion);
+
+                    solucionMejora = FuncionObjetivo(nuevaSolucion) > FuncionObjetivo(solucionMejora) ? nuevaSolucion : solucionMejora;
+
                 }
-                Console.WriteLine();
             }
-        }
-
-        public void ImprimirFuncionObjetivo()
-        {
-            Console.WriteLine("F.O.: {0}", FuncionObjetivo(solucionGRASP));
-        }
-
-        public void ImprimirAsignacion(List<Proceso> sol)
-        {
-            for (int i = 0; i < sol.Count; ++i)
-            {
-                Console.WriteLine("Proceso #{0}:", i + 1);
-
-                if (!sol[i].esConsiderado)
-                {
-                    Console.WriteLine("Este proceso no se ha considerado para la asignacion.");
-                    continue;
-                }
-
-                //for (int j = 0; j < solucion[i].trabajadoresAsignados; ++j)
-                for (int j = 0; j < sol[i].asignacionTrabajadores.Length; ++j)
-                {
-                    if (sol[i].asignacionTrabajadores[j] == 1)
-                        Console.Write(" T{0:D3}", j + 1);
-
-                }
-                Console.WriteLine();
-            }
-        }
-
-
-        public void ImprimirAsignacionMatriz()
-        {
-            ImprimirAsignacionMatriz(solucionGRASP);
-        }
-
-        public void ImprimirAsignacionMatriz(List<Proceso> sol)
-        {
-            Console.Write("Proceso:  ");
-
-            for (int i = 0; i < data.numProcesos; ++i)
-            {
-                Console.Write(" {0}", i + 1);
-            }
-            Console.WriteLine();
-
-            for (int i = 0; i < data.numTrabajadores; ++i)
-            {
-                Console.Write("Trab. #{0:D2}:", i + 1);
-
-                for (int j = 0; j < sol.Count; ++j)
-                {
-                    if (sol[j].asignacionTrabajadores[i] == 1)
-                        Console.Write(" 1");
-                    else
-                        Console.Write(" 0");
-                }
-                Console.WriteLine();
-                                
-            }
-        }
+                /*
+            for i in 0,num_rows:
+	            for j in ri+1,num_rows-1:
+		            new_solutions.add(exchange(row[i],row[j]))
+                    */
+            
+            return solucionMejora;
+        }        
 
     }
 }

@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Impresor.cs" />
     <Compile Include="Proceso.cs" />
     <Compile Include="GRASP.cs" />
     <Compile Include="Program.cs" />

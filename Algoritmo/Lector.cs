@@ -45,7 +45,7 @@ namespace Algoritmo
             // Leo indices de rotura, matriz de trabajador x proceso
             for (int i = 0; i < this.numTrabajadores; ++i)
             {
-                Trabajador trabajador = new Trabajador(i);
+                Trabajador trabajador = new Trabajador(i, numProcesos);
 
                 linea = file.ReadLine();
                 String[] linea_rotura = linea.Split(',');

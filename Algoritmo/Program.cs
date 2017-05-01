@@ -28,16 +28,17 @@ namespace Algoritmo
 
             GRASP grasp = new GRASP(lector);
             grasp.AsignacionGRASP();
-            grasp.ImprimirFuncionObjetivo(); // texto de salida
+            //grasp.impresor.FuncionObjetivo(); // texto de salida
+            //grasp.impresor.AsignacionDeProcesosEnCadaTrabajador();
             //grasp.ImprimirAsignacion(); // texto de salida
-            grasp.ImprimirAsignacionMatriz(); // texto de salida
+            //grasp.impresor.ImprimirAsignacionMatriz(); // texto de salida
 
             watch.Stop();
             elapsedMs = watch.ElapsedMilliseconds;
             Console.WriteLine("Tiempo del algoritmo {0} segundos.", elapsedMs / 1000.0);
 
 
-            //Console.ReadLine();
+            Console.ReadLine();
         }
 
     }
