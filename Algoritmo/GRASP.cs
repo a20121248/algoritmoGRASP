@@ -115,14 +115,19 @@ namespace Algoritmo
                     solucionGRASP = MejorSolucion(solucionGRASP, solucionMejorada);
 
                 //DEBUG
-                Console.WriteLine("Iteracion {0}", i + 1);
-                Console.WriteLine("FO: {0}", FuncionObjetivo(solucionConstruccion));
-                ImprimirAsignacion(solucionConstruccion);
+                //Console.WriteLine("Iteracion {0}", i + 1);
+                //Console.WriteLine("FO: {0}", FuncionObjetivo(solucionConstruccion));
+                //ImprimirAsignacionMatriz(solucionConstruccion);
+                //Console.WriteLine("-----------------------------------------------------------------------");
+
+                //Console.WriteLine("Iteracion {0}", i + 1);
+                //Console.WriteLine("FO: {0}", FuncionObjetivo(solucionConstruccion));
+                //ImprimirAsignacion(solucionConstruccion);
                 //Console.WriteLine("-----------------------------------------------------------------------");
                 //Console.WriteLine("Iteracion {0}", i + 1);
                 //Console.WriteLine("FO: {0}", FuncionObjetivo(solucionGRASP));
                 //ImprimirAsignacion(solucionGRASP);
-                Console.WriteLine("=======================================================================");
+                //Console.WriteLine("=======================================================================");
 
             }
             return solucionGRASP;
@@ -130,12 +135,6 @@ namespace Algoritmo
 
         public List<Proceso> FaseConstruccion(double alfa)
         {
-            // Solucion con todos los procesos sin asignaciones (Vacia)
-            //List<Proceso> solucion = new List<Proceso>(data.procesos);
-
-            //List<Proceso> lstProcesos = new List<Proceso>(data.procesos);
-            //List<Trabajador> lstTrabajadores = new List<Trabajador>(data.trabajadores); 
-
             // Solucion con todos los procesos sin asignaciones (Vacia)
             List<Proceso> solucion = data.procesos.ConvertAll(proc => new Proceso(proc));
             // Lista de procesos por asignar
@@ -156,13 +155,14 @@ namespace Algoritmo
                 Trabajador trab = ElegirTrabajador(lstTrabajadores, proc, alfa);
 
                 // asigno dicho trabajador al proceso
-                proc.asignarTrabajador(trab);
+                //proc.asignarTrabajador(trab); juanjo
 
                 // lo agrego a la solucion
                 solucion[proc.id].asignarTrabajador(trab);
 
                 // si el proceso aun se le pueden asignar trabajadores lo agrego al final
-                if (proc.trabajadoresAsignados < proc.puestosDeTrabajo)
+                //if (proc.trabajadoresAsignados < proc.puestosDeTrabajo)
+                if (solucion[proc.id].trabajadoresAsignados < proc.puestosDeTrabajo)
                     EncolarProceso(lstProcesos, proc);
             }
             return solucion;
@@ -222,6 +222,38 @@ namespace Algoritmo
 
                 }
                 Console.WriteLine();
+            }
+        }
+
+
+        public void ImprimirAsignacionMatriz()
+        {
+            ImprimirAsignacionMatriz(solucionGRASP);
+        }
+
+        public void ImprimirAsignacionMatriz(List<Proceso> sol)
+        {
+            Console.Write("Proceso:  ");
+
+            for (int i = 0; i < data.numProcesos; ++i)
+            {
+                Console.Write(" {0}", i + 1);
+            }
+            Console.WriteLine();
+
+            for (int i = 0; i < data.numTrabajadores; ++i)
+            {
+                Console.Write("Trab. #{0:D2}:", i + 1);
+
+                for (int j = 0; j < sol.Count; ++j)
+                {
+                    if (sol[j].asignacionTrabajadores[i] == 1)
+                        Console.Write(" 1");
+                    else
+                        Console.Write(" 0");
+                }
+                Console.WriteLine();
+                                
             }
         }
 
